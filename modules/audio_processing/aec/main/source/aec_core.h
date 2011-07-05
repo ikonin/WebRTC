@@ -16,7 +16,6 @@
 #define WEBRTC_MODULES_AUDIO_PROCESSING_AEC_MAIN_SOURCE_AEC_CORE_H_
 
 #include <stdio.h>
-#include "fft4g.h"
 #include "typedefs.h"
 #include "signal_processing_library.h"
 
