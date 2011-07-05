@@ -3418,7 +3418,8 @@ WebRtc_Word32 AudioDeviceWindowsWave::RecProc(LONGLONG& consumedTime)
         _sndCardPlayDelay = msecOnPlaySide;
         _sndCardRecDelay = msecOnRecordSide;
 
-        LARGE_INTEGER t1,t2;
+        LARGE_INTEGER t1 = {0,0};
+        LARGE_INTEGER t2 = {0,0};
 
         if (send)
         {
