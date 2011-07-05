@@ -52,6 +52,9 @@
 // REFERENCE_TIME time units per millisecond
 #define REFTIMES_PER_MILLISEC  10000
 
+// ignore FALSE HRESULT returned by IsFormatSupported while checking device caps
+//#define IGNORE_FALSE_IS_FORMAT_SUPPORTED
+
 typedef struct tagTHREADNAME_INFO
 {
    DWORD dwType;        // must be 0x1000
@@ -2219,6 +2222,7 @@ WebRtc_Word32 AudioDeviceWindowsCore::InitPlayout()
                                   AUDCLNT_SHAREMODE_SHARED,
                                   &Wfx,
                                   &pWfxClosestMatch);
+#ifndef IGNORE_FALSE_IS_FORMAT_SUPPORTED
             if (hr == S_OK)
             {
                 break;
@@ -2228,6 +2232,22 @@ WebRtc_Word32 AudioDeviceWindowsCore::InitPlayout()
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "nChannels=%d, nSamplesPerSec=%d is not supported",
                     Wfx.nChannels, Wfx.nSamplesPerSec);
             }
+#else
+            if (hr == S_OK || (hr == S_FALSE &&
+                               Wfx.nSamplesPerSec == pWfxClosestMatch->nSamplesPerSec &&
+                               Wfx.nChannels == pWfxClosestMatch->nChannels
+                               )
+                )
+            {
+                hr = S_OK;
+                break;
+            }
+            else
+            {
+                WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "nChannels=%d, nSamplesPerSec=%d is not supported",
+                    Wfx.nChannels, Wfx.nSamplesPerSec);
+            }
+#endif //IGNORE_FALSE_IS_FORMAT_SUPPORTED
         }
         if (hr == S_OK)
             break;
@@ -2473,6 +2493,7 @@ WebRtc_Word32 AudioDeviceWindowsCore::InitRecording()
                                   AUDCLNT_SHAREMODE_SHARED,
                                   &Wfx,
                                   &pWfxClosestMatch);
+#ifndef IGNORE_FALSE_IS_FORMAT_SUPPORTED
             if (hr == S_OK)
             {
                 break;
@@ -2482,6 +2503,22 @@ WebRtc_Word32 AudioDeviceWindowsCore::InitRecording()
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "nChannels=%d, nSamplesPerSec=%d is not supported",
                     Wfx.nChannels, Wfx.nSamplesPerSec);
             }
+#else
+            if (hr == S_OK || (hr == S_FALSE &&
+                               Wfx.nSamplesPerSec == pWfxClosestMatch->nSamplesPerSec &&
+                               Wfx.nChannels == pWfxClosestMatch->nChannels
+                               )
+                )
+            {
+                hr = S_OK;
+                break;
+            }
+            else
+            {
+                WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "nChannels=%d, nSamplesPerSec=%d is not supported",
+                    Wfx.nChannels, Wfx.nSamplesPerSec);
+            }
+#endif //IGNORE_FALSE_IS_FORMAT_SUPPORTED
         }
         if (hr == S_OK)
             break;
