@@ -75,7 +75,9 @@ WebRtc_UWord32 CpuWrapper::DetectNumberOfCores()
 CpuWrapper* CpuWrapper::CreateCpu()
 {
 #if defined(_WIN32)
-   return new CpuWindows();
+    // disable WinCPU because of very slow WMI initialization
+    // return new CpuWindows();
+    return 0;
 #elif (defined(WEBRTC_MAC) || defined(WEBRTC_MAC_INTEL))
     return new CpuWrapperMac();
 #elif defined(ANDROID)
